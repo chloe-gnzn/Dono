@@ -13,7 +13,7 @@ Progress tracker. Tick a box when the commit has been applied to the repo.
 - [x] 6. `feat(db): blood compatibility table and seed data`
 - [x] 7. `feat: Supabase client and configuration`
 - [x] 8. `feat(auth): registration, login, logout`
-- [ ] 9. `feat(auth): role-based authorization`
+- [x] 9. `feat(auth): role-based authorization`
 
 ## Phase 2: Entry flow
 - [ ] 10. `feat(ui): landing page`

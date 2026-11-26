@@ -1,0 +1,26 @@
+@inject NavigationManager Nav
+
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState>? AuthenticationStateTask { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (AuthenticationStateTask is null)
+        {
+            Nav.NavigateTo("/login", replace: true);
+            return;
+        }
+
+        var state = await AuthenticationStateTask;
+        if (state.User.Identity?.IsAuthenticated == true)
+        {
+            Nav.NavigateTo("/unauthorized", replace: true);
+            return;
+        }
+
+        var relative = "/" + Nav.ToBaseRelativePath(Nav.Uri);
+        var returnUrl = Uri.EscapeDataString(relative);
+        Nav.NavigateTo($"/login?returnUrl={returnUrl}", replace: true);
+    }
+}

@@ -7,6 +7,9 @@
                         <Spinner Label="Checking session..." />
                     </div>
                 </Authorizing>
+                <NotAuthorized>
+                    <RedirectToAccessFallback />
+                </NotAuthorized>
             </AuthorizeRouteView>
             <FocusOnNavigate RouteData="routeData" Selector="h1" />
         </Found>

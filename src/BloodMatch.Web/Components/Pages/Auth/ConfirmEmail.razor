@@ -1,5 +1,6 @@
 @page "/auth/confirm"
 @inject AuthService AuthService
+@inject RoleRedirectService RoleRedirect
 @inject NavigationManager Nav
 
 <PageTitle>Email confirmation - BloodMatch</PageTitle>
@@ -27,8 +28,8 @@
                 Your email address has been verified and your session is active.
             </AppAlert>
             <div class="mt-6 flex flex-wrap gap-3">
-                <AppButton Href="/">Continue</AppButton>
-                <AppButton Variant="ButtonVariant.Outline" Href="/login">Sign in</AppButton>
+                <AppButton Href="@_continueHref">Continue</AppButton>
+                <AppButton Variant="ButtonVariant.Outline" Href="/">Home</AppButton>
             </div>
         }
     </AppCard>
@@ -46,6 +47,7 @@
 
     private bool _verifying = true;
     private string? _error;
+    private string _continueHref = "/";
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -86,6 +88,7 @@
             return;
         }
 
+        _continueHref = RoleRedirect.ResolvePostLoginTarget(result.Role, null);
         StateHasChanged();
     }
 }

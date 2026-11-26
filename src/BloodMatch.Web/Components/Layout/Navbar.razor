@@ -1,5 +1,3 @@
-@implements IDisposable
-@inject CurrentUserState User
 @inject AuthService AuthService
 @inject NavigationManager Nav
 
@@ -9,35 +7,112 @@
 
         @* Desktop links *@
         <ul class="hidden items-center gap-7 md:flex">
-            @foreach (var item in VisibleLinks)
-            {
+            <li>
+                <NavLink href="/"
+                         Match="NavLinkMatch.All"
+                         class="text-sm font-medium text-ink-soft transition-colors hover:text-brand-600"
+                         ActiveClass="!font-bold !text-brand-600">
+                    Home
+                </NavLink>
+            </li>
+
+            <AuthorizeView>
+                <NotAuthorized>
+                    <li>
+                        <NavLink href="/#how-it-works"
+                                 class="text-sm font-medium text-ink-soft transition-colors hover:text-brand-600"
+                                 ActiveClass="!font-bold !text-brand-600">
+                            How it works
+                        </NavLink>
+                    </li>
+                    <li>
+                        <NavLink href="/about"
+                                 class="text-sm font-medium text-ink-soft transition-colors hover:text-brand-600"
+                                 ActiveClass="!font-bold !text-brand-600">
+                            About
+                        </NavLink>
+                    </li>
+                    <li>
+                        <NavLink href="/faq"
+                                 class="text-sm font-medium text-ink-soft transition-colors hover:text-brand-600"
+                                 ActiveClass="!font-bold !text-brand-600">
+                            FAQ
+                        </NavLink>
+                    </li>
+                </NotAuthorized>
+            </AuthorizeView>
+
+            <AuthorizeView Policy="@AuthPolicies.RequesterOnly">
                 <li>
-                    <NavLink href="@item.Href"
-                             Match="@(item.ExactMatch ? NavLinkMatch.All : NavLinkMatch.Prefix)"
+                    <NavLink href="/requester"
                              class="text-sm font-medium text-ink-soft transition-colors hover:text-brand-600"
                              ActiveClass="!font-bold !text-brand-600">
-                        @item.Text
+                        My requests
                     </NavLink>
                 </li>
-            }
+                <li>
+                    <NavLink href="/requester/new"
+                             class="text-sm font-medium text-ink-soft transition-colors hover:text-brand-600"
+                             ActiveClass="!font-bold !text-brand-600">
+                        New request
+                    </NavLink>
+                </li>
+            </AuthorizeView>
+
+            <AuthorizeView Policy="@AuthPolicies.DonorOnly">
+                <li>
+                    <NavLink href="/donor"
+                             class="text-sm font-medium text-ink-soft transition-colors hover:text-brand-600"
+                             ActiveClass="!font-bold !text-brand-600">
+                        Dashboard
+                    </NavLink>
+                </li>
+                <li>
+                    <NavLink href="/donor/history"
+                             class="text-sm font-medium text-ink-soft transition-colors hover:text-brand-600"
+                             ActiveClass="!font-bold !text-brand-600">
+                        Donation history
+                    </NavLink>
+                </li>
+            </AuthorizeView>
+
+            <AuthorizeView Policy="@AuthPolicies.ModeratorOnly">
+                <li>
+                    <NavLink href="/moderator"
+                             class="text-sm font-medium text-ink-soft transition-colors hover:text-brand-600"
+                             ActiveClass="!font-bold !text-brand-600">
+                        Review queue
+                    </NavLink>
+                </li>
+            </AuthorizeView>
+
+            <AuthorizeView Policy="@AuthPolicies.AdminOnly">
+                <li>
+                    <NavLink href="/admin/moderators"
+                             class="text-sm font-medium text-ink-soft transition-colors hover:text-brand-600"
+                             ActiveClass="!font-bold !text-brand-600">
+                        Moderators
+                    </NavLink>
+                </li>
+            </AuthorizeView>
         </ul>
 
         @* Desktop actions *@
         <div class="hidden items-center gap-3 md:flex">
-            @if (User.IsAuthenticated)
-            {
-                @if (!string.IsNullOrWhiteSpace(User.DisplayName))
-                {
-                    <span class="text-sm font-medium text-ink-soft">@User.DisplayName</span>
-                }
-                <AppBadge Variant="BadgeVariant.Brand">@User.Role</AppBadge>
-                <AppButton Variant="ButtonVariant.Outline" Size="ButtonSize.Small" OnClick="LogOutAsync">Log out</AppButton>
-            }
-            else
-            {
-                <AppButton Variant="ButtonVariant.Outline" Size="ButtonSize.Small" Href="/login">Log in</AppButton>
-                <AppButton Size="ButtonSize.Small" Href="/register">Get started</AppButton>
-            }
+            <AuthorizeView>
+                <Authorized>
+                    @if (!string.IsNullOrWhiteSpace(context.User.Identity?.Name))
+                    {
+                        <span class="text-sm font-medium text-ink-soft">@context.User.Identity.Name</span>
+                    }
+                    <AppBadge Variant="BadgeVariant.Brand">@AuthPolicies.GetRole(context.User)</AppBadge>
+                    <AppButton Variant="ButtonVariant.Outline" Size="ButtonSize.Small" OnClick="LogOutAsync">Log out</AppButton>
+                </Authorized>
+                <NotAuthorized>
+                    <AppButton Variant="ButtonVariant.Outline" Size="ButtonSize.Small" Href="/login">Log in</AppButton>
+                    <AppButton Size="ButtonSize.Small" Href="/register">Get started</AppButton>
+                </NotAuthorized>
+            </AuthorizeView>
         </div>
 
         @* Mobile menu button *@
@@ -65,30 +140,118 @@
     {
         <div id="mobile-menu" class="border-t border-ink/10 bg-white px-4 pb-5 pt-2 md:hidden">
             <ul class="space-y-1">
-                @foreach (var item in VisibleLinks)
-                {
+                <li>
+                    <NavLink href="/"
+                             Match="NavLinkMatch.All"
+                             class="block rounded-lg px-3 py-2.5 text-base font-medium text-ink hover:bg-brand-50"
+                             ActiveClass="!bg-brand-50 !font-bold !text-brand-600"
+                             @onclick="CloseMenu">
+                        Home
+                    </NavLink>
+                </li>
+
+                <AuthorizeView>
+                    <NotAuthorized>
+                        <li>
+                            <NavLink href="/#how-it-works"
+                                     class="block rounded-lg px-3 py-2.5 text-base font-medium text-ink hover:bg-brand-50"
+                                     ActiveClass="!bg-brand-50 !font-bold !text-brand-600"
+                                     @onclick="CloseMenu">
+                                How it works
+                            </NavLink>
+                        </li>
+                        <li>
+                            <NavLink href="/about"
+                                     class="block rounded-lg px-3 py-2.5 text-base font-medium text-ink hover:bg-brand-50"
+                                     ActiveClass="!bg-brand-50 !font-bold !text-brand-600"
+                                     @onclick="CloseMenu">
+                                About
+                            </NavLink>
+                        </li>
+                        <li>
+                            <NavLink href="/faq"
+                                     class="block rounded-lg px-3 py-2.5 text-base font-medium text-ink hover:bg-brand-50"
+                                     ActiveClass="!bg-brand-50 !font-bold !text-brand-600"
+                                     @onclick="CloseMenu">
+                                FAQ
+                            </NavLink>
+                        </li>
+                    </NotAuthorized>
+                </AuthorizeView>
+
+                <AuthorizeView Policy="@AuthPolicies.RequesterOnly">
                     <li>
-                        <NavLink href="@item.Href"
-                                 Match="@(item.ExactMatch ? NavLinkMatch.All : NavLinkMatch.Prefix)"
+                        <NavLink href="/requester"
                                  class="block rounded-lg px-3 py-2.5 text-base font-medium text-ink hover:bg-brand-50"
                                  ActiveClass="!bg-brand-50 !font-bold !text-brand-600"
                                  @onclick="CloseMenu">
-                            @item.Text
+                            My requests
                         </NavLink>
                     </li>
-                }
+                    <li>
+                        <NavLink href="/requester/new"
+                                 class="block rounded-lg px-3 py-2.5 text-base font-medium text-ink hover:bg-brand-50"
+                                 ActiveClass="!bg-brand-50 !font-bold !text-brand-600"
+                                 @onclick="CloseMenu">
+                            New request
+                        </NavLink>
+                    </li>
+                </AuthorizeView>
+
+                <AuthorizeView Policy="@AuthPolicies.DonorOnly">
+                    <li>
+                        <NavLink href="/donor"
+                                 class="block rounded-lg px-3 py-2.5 text-base font-medium text-ink hover:bg-brand-50"
+                                 ActiveClass="!bg-brand-50 !font-bold !text-brand-600"
+                                 @onclick="CloseMenu">
+                            Dashboard
+                        </NavLink>
+                    </li>
+                    <li>
+                        <NavLink href="/donor/history"
+                                 class="block rounded-lg px-3 py-2.5 text-base font-medium text-ink hover:bg-brand-50"
+                                 ActiveClass="!bg-brand-50 !font-bold !text-brand-600"
+                                 @onclick="CloseMenu">
+                            Donation history
+                        </NavLink>
+                    </li>
+                </AuthorizeView>
+
+                <AuthorizeView Policy="@AuthPolicies.ModeratorOnly">
+                    <li>
+                        <NavLink href="/moderator"
+                                 class="block rounded-lg px-3 py-2.5 text-base font-medium text-ink hover:bg-brand-50"
+                                 ActiveClass="!bg-brand-50 !font-bold !text-brand-600"
+                                 @onclick="CloseMenu">
+                            Review queue
+                        </NavLink>
+                    </li>
+                </AuthorizeView>
+
+                <AuthorizeView Policy="@AuthPolicies.AdminOnly">
+                    <li>
+                        <NavLink href="/admin/moderators"
+                                 class="block rounded-lg px-3 py-2.5 text-base font-medium text-ink hover:bg-brand-50"
+                                 ActiveClass="!bg-brand-50 !font-bold !text-brand-600"
+                                 @onclick="CloseMenu">
+                            Moderators
+                        </NavLink>
+                    </li>
+                </AuthorizeView>
             </ul>
 
             <div class="mt-4 flex flex-col gap-3">
-                @if (User.IsAuthenticated)
-                {
-                    <AppButton Variant="ButtonVariant.Outline" FullWidth="true" OnClick="LogOutAsync">Log out (@User.Role)</AppButton>
-                }
-                else
-                {
-                    <AppButton FullWidth="true" Href="/register">Get started</AppButton>
-                    <AppButton Variant="ButtonVariant.Outline" FullWidth="true" Href="/login">Log in</AppButton>
-                }
+                <AuthorizeView>
+                    <Authorized>
+                        <AppButton Variant="ButtonVariant.Outline" FullWidth="true" OnClick="LogOutAsync">
+                            Log out (@AuthPolicies.GetRole(context.User))
+                        </AppButton>
+                    </Authorized>
+                    <NotAuthorized>
+                        <AppButton FullWidth="true" Href="/register">Get started</AppButton>
+                        <AppButton Variant="ButtonVariant.Outline" FullWidth="true" Href="/login">Log in</AppButton>
+                    </NotAuthorized>
+                </AuthorizeView>
             </div>
         </div>
     }
@@ -96,29 +259,6 @@
 
 @code {
     private bool _menuOpen;
-
-    private static readonly NavLinkItem[] Links =
-    [
-        new("Home", "/", ExactMatch: true),
-        new("How it works", "/#how-it-works", [UserRole.Guest]),
-        new("About", "/about", [UserRole.Guest]),
-        new("FAQ", "/faq", [UserRole.Guest]),
-
-        new("My requests", "/requester", [UserRole.Requester]),
-        new("New request", "/requester/new", [UserRole.Requester]),
-
-        new("Dashboard", "/donor", [UserRole.Donor]),
-        new("Donation history", "/donor/history", [UserRole.Donor]),
-
-        new("Review queue", "/moderator", [UserRole.Moderator, UserRole.Admin]),
-        new("Moderators", "/admin/moderators", [UserRole.Admin]),
-    ];
-
-    private IEnumerable<NavLinkItem> VisibleLinks => Links.Where(l => l.IsVisibleTo(User.Role));
-
-    protected override void OnInitialized() => User.Changed += OnUserChanged;
-
-    private void OnUserChanged() => _ = InvokeAsync(StateHasChanged);
 
     private void CloseMenu() => _menuOpen = false;
 
@@ -128,6 +268,4 @@
         await AuthService.LogoutAsync();
         Nav.NavigateTo("/");
     }
-
-    public void Dispose() => User.Changed -= OnUserChanged;
 }

@@ -1,3 +1,4 @@
+using BloodMatch.Web.Auth;
 using BloodMatch.Web.Components;
 using BloodMatch.Web.Configuration;
 using BloodMatch.Web.Services;
@@ -10,9 +11,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-// Blazor authentication state & protected browser storage for circuit sessions.
+// Blazor authentication state & role-based authorization policies.
 builder.Services.AddCascadingAuthenticationState();
-builder.Services.AddAuthorizationCore();
+builder.Services.AddAuthorizationCore(AuthPolicies.Configure);
 
 // Supabase configuration bound from appsettings and dotnet user-secrets.
 builder.Services.AddOptions<SupabaseSettings>()
@@ -41,13 +42,14 @@ builder.Services.AddScoped<SupabaseHealthService>();
 builder.Services.AddHealthChecks()
     .AddCheck<SupabaseHealthCheck>("supabase");
 
-// Authentication services
+// Authentication & authorization services
 builder.Services.AddScoped<CurrentUserState>();
 builder.Services.AddScoped<CircuitSessionStore>();
 builder.Services.AddScoped<SupabaseAuthenticationStateProvider>();
 builder.Services.AddScoped<AuthenticationStateProvider>(sp =>
     sp.GetRequiredService<SupabaseAuthenticationStateProvider>());
 builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<RoleRedirectService>();
 
 var app = builder.Build();
 

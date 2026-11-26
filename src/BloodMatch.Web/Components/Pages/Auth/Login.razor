@@ -1,5 +1,6 @@
 @page "/login"
 @inject AuthService AuthService
+@inject RoleRedirectService RoleRedirect
 @inject NavigationManager Nav
 
 <PageTitle>Log in - BloodMatch</PageTitle>
@@ -64,10 +65,7 @@
                 return;
             }
 
-            var target = !string.IsNullOrWhiteSpace(ReturnUrl) && ReturnUrl.StartsWith('/') && !ReturnUrl.StartsWith("//")
-                ? ReturnUrl
-                : "/";
-            Nav.NavigateTo(target);
+            RoleRedirect.RedirectAfterLogin(Nav, result.Role, ReturnUrl);
         }
         finally
         {

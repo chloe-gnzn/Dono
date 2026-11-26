@@ -1,0 +1,33 @@
+@page "/unauthorized"
+@inject AuthenticationStateProvider AuthStateProvider
+
+<PageTitle>Access denied - BloodMatch</PageTitle>
+
+<div class="mx-auto max-w-xl px-4 py-20 text-center">
+    <p class="font-heading text-6xl font-extrabold text-brand-600">403</p>
+    <h1 class="mt-4 !text-3xl">Access denied</h1>
+    <p class="mt-3 text-ink-soft">
+        Your account does not have permission to view this page.
+    </p>
+
+    <div class="mt-8 flex flex-wrap justify-center gap-3">
+        @if (_homeHref != "/")
+        {
+            <AppButton Href="@_homeHref">Go to my dashboard</AppButton>
+        }
+        <AppButton Variant="@(_homeHref == "/" ? ButtonVariant.Primary : ButtonVariant.Outline)" Href="/">
+            Back to home
+        </AppButton>
+    </div>
+</div>
+
+@code {
+    private string _homeHref = "/";
+
+    protected override async Task OnInitializedAsync()
+    {
+        var state = await AuthStateProvider.GetAuthenticationStateAsync();
+        var role = AuthPolicies.GetRole(state.User);
+        _homeHref = AuthPolicies.GetDefaultHomeRoute(role);
+    }
+}
