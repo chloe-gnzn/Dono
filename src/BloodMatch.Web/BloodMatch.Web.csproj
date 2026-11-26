@@ -8,4 +8,23 @@
     <UserSecretsId>5b2f6c0e-7d3a-4e1b-9a54-0b100d3a7c11</UserSecretsId>
   </PropertyGroup>
 
+  <!-- ================================================================= -->
+  <!-- Tailwind CSS (standalone CLI, no Node.js required)                -->
+  <!-- Binary is downloaded by scripts/setup-tailwind.(ps1|sh) into tools/ -->
+  <!-- ================================================================= -->
+  <PropertyGroup>
+    <TailwindExe Condition="$([MSBuild]::IsOSPlatform('Windows'))">$(MSBuildProjectDirectory)\tools\tailwindcss.exe</TailwindExe>
+    <TailwindExe Condition="!$([MSBuild]::IsOSPlatform('Windows'))">$(MSBuildProjectDirectory)/tools/tailwindcss</TailwindExe>
+    <TailwindMinify Condition="'$(Configuration)' == 'Release'">--minify</TailwindMinify>
+  </PropertyGroup>
+
+  <Target Name="TailwindBuild" BeforeTargets="BeforeBuild" Condition="Exists('$(TailwindExe)')">
+    <Message Importance="high" Text="Tailwind: compiling Styles/app.css -> wwwroot/css/app.css" />
+    <Exec Command="&quot;$(TailwindExe)&quot; -i Styles/app.css -o wwwroot/css/app.css $(TailwindMinify)" WorkingDirectory="$(MSBuildProjectDirectory)" />
+  </Target>
+
+  <Target Name="TailwindMissing" BeforeTargets="BeforeBuild" Condition="!Exists('$(TailwindExe)')">
+    <Warning Text="Tailwind CLI not found at '$(TailwindExe)'. The app will be unstyled. Run scripts/setup-tailwind.ps1 (Windows) or scripts/setup-tailwind.sh (macOS/Linux) once." />
+  </Target>
+
 </Project>

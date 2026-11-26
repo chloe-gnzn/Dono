@@ -1,0 +1,75 @@
+@page "/dev/palette"
+
+<PageTitle>Palette (dev)</PageTitle>
+
+<div class="mx-auto max-w-5xl space-y-10 px-4 py-10">
+    <header>
+        <p class="text-xs font-bold uppercase tracking-widest text-brand-600">Developer page</p>
+        <h1 class="mt-1">Design palette</h1>
+        <p class="mt-2 text-ink-soft">Smoke test for the Tailwind pipeline. Remove before release.</p>
+    </header>
+
+    <section class="card p-6">
+        <h2 class="mb-4">Brand red</h2>
+        <div class="grid grid-cols-5 gap-3 md:grid-cols-10">
+            @foreach (var (cls, label) in Reds)
+            {
+                <div>
+                    <div class="@cls h-14 rounded-lg shadow-sm"></div>
+                    <p class="mt-1 text-center text-[11px] text-ink-soft">@label</p>
+                </div>
+            }
+        </div>
+    </section>
+
+    <section class="card p-6">
+        <h2 class="mb-4">Aqua, ink and accent</h2>
+        <div class="grid grid-cols-4 gap-3 md:grid-cols-8">
+            @foreach (var (cls, label) in Others)
+            {
+                <div>
+                    <div class="@cls h-14 rounded-lg border border-ink/10"></div>
+                    <p class="mt-1 text-center text-[11px] text-ink-soft">@label</p>
+                </div>
+            }
+        </div>
+    </section>
+
+    <section class="card p-6">
+        <h2 class="mb-4">Buttons</h2>
+        <div class="flex flex-wrap items-center gap-3">
+            <button class="btn btn-primary">Try now</button>
+            <button class="btn btn-outline">See more</button>
+            <button class="btn btn-ghost">Ghost</button>
+            <button class="btn btn-danger">Deny</button>
+            <button class="btn btn-primary" disabled>Disabled</button>
+        </div>
+        <p class="mt-4"><a class="link" href="#">A text link</a></p>
+    </section>
+
+    <section class="band rounded-2xl p-6">
+        <h2 class="!text-white">Red band</h2>
+        <p class="mt-2 text-white/90">The footer and highlight strips use this, like the inspiration image.</p>
+    </section>
+
+    <section class="card p-6">
+        <h2 class="mb-4">Form input</h2>
+        <label class="form-label" for="demo">Hospital name</label>
+        <input id="demo" class="form-input" placeholder="e.g. Philippine General Hospital" />
+        <p class="form-hint">Helper text sits here.</p>
+    </section>
+</div>
+
+@code {
+    private static readonly (string, string)[] Reds =
+    [
+        ("bg-brand-50", "50"), ("bg-brand-100", "100"), ("bg-brand-200", "200"), ("bg-brand-300", "300"), ("bg-brand-400", "400"),
+        ("bg-brand-500", "500"), ("bg-brand-600", "600"), ("bg-brand-700", "700"), ("bg-brand-800", "800"), ("bg-brand-900", "900"),
+    ];
+
+    private static readonly (string, string)[] Others =
+    [
+        ("bg-aqua-50", "aqua 50"), ("bg-aqua-100", "aqua 100"), ("bg-aqua-200", "aqua 200"), ("bg-aqua-300", "aqua 300"),
+        ("bg-ink", "ink"), ("bg-ink-soft", "ink soft"), ("bg-ink-muted", "ink muted"), ("bg-accent", "accent"),
+    ];
+}

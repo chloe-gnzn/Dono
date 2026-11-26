@@ -10,7 +10,7 @@ identities are never shown to donors.
 | Layer      | Technology                                   |
 |------------|----------------------------------------------|
 | App        | Blazor Web App (.NET 10), Interactive Server |
-| Styling    | Tailwind CSS (standalone CLI)                |
+| Styling    | Tailwind CSS 3 (standalone CLI, no Node)     |
 | Database   | Supabase (Postgres, Auth, Storage)           |
 
 ## Prerequisites
@@ -18,27 +18,61 @@ identities are never shown to donors.
 - [.NET 10 SDK](https://dotnet.microsoft.com/download) (`dotnet --version` should print `10.x`)
 - Git
 
+## First-time setup
+
+Download the Tailwind CLI once (it is git-ignored, so every clone needs this):
+
+```powershell
+# Windows (PowerShell)
+.\scripts\setup-tailwind.ps1
+```
+
+```bash
+# macOS / Linux
+chmod +x scripts/*.sh
+./scripts/setup-tailwind.sh
+```
+
 ## Run
 
 ```bash
 dotnet run --project src/BloodMatch.Web --launch-profile http
 ```
 
-Then open <http://localhost:5080>.
+Open <http://localhost:5080>. Every `dotnet build` / `dotnet run` recompiles
+`Styles/app.css` into `wwwroot/css/app.css` automatically.
+
+### Live development (recommended)
+
+Use two terminals so styling updates as you edit Razor files:
+
+```bash
+# terminal 1
+dotnet watch --project src/BloodMatch.Web --launch-profile http
+
+# terminal 2 (Windows: .\scripts\tailwind-watch.ps1)
+./scripts/tailwind-watch.sh
+```
 
 ## Repository layout
 
 ```
 BloodMatch.sln
-docs/                     Planning notes (see COMMIT_PLAN.md)
+docs/                     COMMIT_PLAN.md (progress), DESIGN.md (palette, styling rules)
+scripts/                  Tailwind setup and watch scripts
 supabase/migrations/      SQL migrations (added from commit 4)
 src/BloodMatch.Web/
   Components/             Razor components (App, Routes, Layout, Pages)
-  Models/                 Domain/view models
-  Services/               Application services
-  Data/                   Data access
+  Styles/app.css          Tailwind source (compiled to wwwroot/css/app.css)
+  tailwind.config.js      Palette and theme
+  tools/                  Tailwind binary (downloaded, git-ignored)
+  Models/ Services/ Data/ Domain models, services, data access
   Program.cs              App startup
 ```
+
+## Developer pages
+
+`/dev/palette` shows the design palette. Dev pages are removed before release.
 
 ## Progress
 

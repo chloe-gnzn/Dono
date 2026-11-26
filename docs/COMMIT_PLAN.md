@@ -4,7 +4,7 @@ Progress tracker. Tick a box when the commit has been applied to the repo.
 
 ## Phase 0: Foundation
 - [x] 1. `chore: scaffold Blazor Web App and repo structure`
-- [ ] 2. `chore: integrate Tailwind CSS`
+- [x] 2. `chore: integrate Tailwind CSS`
 - [ ] 3. `feat: base layout and shared UI components`
 
 ## Phase 1: Database and auth

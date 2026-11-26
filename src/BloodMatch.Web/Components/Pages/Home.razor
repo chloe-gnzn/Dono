@@ -3,20 +3,26 @@
 
 <PageTitle>BloodMatch</PageTitle>
 
-<h1>BloodMatch</h1>
-<p>Non-commercial blood matching portal. The project scaffold is running.</p>
+<div class="mx-auto max-w-4xl px-4 py-12">
+    <div class="card-offset p-8 md:p-12">
+        <p class="text-xs font-bold uppercase tracking-widest text-brand-600">Scaffold</p>
+        <h1 class="mt-2">BloodMatch</h1>
+        <p class="mt-4 max-w-xl text-ink-soft">
+            Non-commercial blood matching portal. The project scaffold and the Tailwind styling pipeline are running.
+        </p>
 
-<ul>
-    <li>Environment: <strong>@Env.EnvironmentName</strong></li>
-    <li>Runtime: <strong>@Environment.Version</strong></li>
-</ul>
+        <ul class="mt-6 space-y-1 text-sm text-ink-soft">
+            <li>Environment: <strong class="text-ink">@Env.EnvironmentName</strong></li>
+            <li>Runtime: <strong class="text-ink">@Environment.Version</strong></li>
+        </ul>
 
-<h2>Interactivity check</h2>
-<p>
-    This confirms the Blazor Server circuit (SignalR) is connected.
-    Clicked <strong>@_count</strong> time(s).
-</p>
-<button @onclick="() => _count++">Click me</button>
+        <div class="mt-8 flex flex-wrap items-center gap-3">
+            <button class="btn btn-primary" @onclick="() => _count++">Clicked @_count time(s)</button>
+            <a class="btn btn-outline" href="dev/palette">See palette</a>
+        </div>
+        <p class="form-hint">The counter confirms the Blazor Server circuit is connected.</p>
+    </div>
+</div>
 
 @code {
     private int _count;
