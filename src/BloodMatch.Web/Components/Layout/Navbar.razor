@@ -5,7 +5,6 @@
     <nav class="mx-auto flex max-w-6xl items-center justify-between gap-6 px-4 py-3" aria-label="Main">
         <BrandLogo />
 
-        @* Desktop links *@
         <ul class="hidden items-center gap-7 md:flex">
             @foreach (var item in VisibleLinks)
             {
@@ -20,7 +19,6 @@
             }
         </ul>
 
-        @* Desktop actions *@
         <div class="hidden items-center gap-3 md:flex">
             @if (User.IsAuthenticated)
             {
@@ -34,7 +32,6 @@
             }
         </div>
 
-        @* Mobile menu button *@
         <button type="button"
                 class="-mr-2 rounded-lg p-2 text-ink hover:bg-ink/5 md:hidden"
                 aria-label="Toggle menu"
@@ -54,7 +51,6 @@
         </button>
     </nav>
 
-    @* Mobile panel *@
     @if (_menuOpen)
     {
         <div id="mobile-menu" class="border-t border-ink/10 bg-white px-4 pb-5 pt-2 md:hidden">
@@ -93,7 +89,6 @@
 
     private static readonly UserRole[] Authed = [UserRole.Requester, UserRole.Donor, UserRole.Moderator, UserRole.Admin];
 
-    // Single source of truth for navigation. Role-specific entries only show for that role.
     private static readonly NavLinkItem[] Links =
     [
         new("Home", "/", ExactMatch: true),
@@ -119,7 +114,6 @@
 
     private void CloseMenu() => _menuOpen = false;
 
-    // Temporary: real logout arrives with auth (commit 8).
     private void LogOut()
     {
         _menuOpen = false;

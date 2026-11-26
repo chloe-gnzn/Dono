@@ -1,5 +1,3 @@
-@* Label + control + hint/error wrapper. Put any input inside; give it id="@InputId". *@
-
 <div class="@Class">
     @if (!string.IsNullOrEmpty(Label))
     {
@@ -28,7 +26,6 @@
 @code {
     [Parameter] public string? Label { get; set; }
 
-    /// <summary>The id of the input inside, so the label is linked to it.</summary>
     [Parameter] public string? InputId { get; set; }
 
     [Parameter] public string? Hint { get; set; }

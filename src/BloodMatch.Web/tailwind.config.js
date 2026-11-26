@@ -1,5 +1,3 @@
-/** @type {import('tailwindcss').Config} */
-
 module.exports = {
   content: [
     './Components/**/*.{razor,html,cs}',
@@ -28,13 +26,11 @@ module.exports = {
           200: '#B5DADD',
           300: '#8FC4C9',
         },
-        // Charcoal text.
         ink: {
           DEFAULT: '#2D2D2D',
           soft: '#5C5C5C',
           muted: '#8A8A8A',
         },
-        // Small blue accent used by the illustration icons (info states).
         accent: {
           DEFAULT: '#26A5DD',
           light: '#E3F4FC',
@@ -47,7 +43,6 @@ module.exports = {
       },
       boxShadow: {
         card: '0 10px 30px -12px rgba(45, 45, 45, 0.25)',
-        // Flat offset shadow like the framed card in the inspiration image.
         offset: '8px 8px 0 0 #B5DADD',
       },
     },

@@ -8,7 +8,7 @@ Progress tracker. Tick a box when the commit has been applied to the repo.
 - [x] 3. `feat: base layout and shared UI components`
 
 ## Phase 1: Database and auth
-- [ ] 4. `feat(db): initial schema migration`
+- [x] 4. `feat(db): initial schema migration`
 - [ ] 5. `feat(db): Row Level Security policies`
 - [ ] 6. `feat(db): blood compatibility table and seed data`
 - [ ] 7. `feat: Supabase client and configuration`

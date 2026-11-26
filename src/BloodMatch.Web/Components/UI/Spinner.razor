@@ -16,10 +16,8 @@
 @code {
     [Parameter] public SpinnerSize Size { get; set; } = SpinnerSize.Medium;
 
-    /// <summary>Use on dark/red backgrounds (white spinner).</summary>
     [Parameter] public bool Light { get; set; }
 
-    /// <summary>Optional visible text next to the spinner.</summary>
     [Parameter] public string? Label { get; set; }
 
     private string SizeClass => Size switch

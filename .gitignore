@@ -1,10 +1,8 @@
-# .NET build output
 [Bb]in/
 [Oo]bj/
 [Ll]og/
 [Ll]ogs/
 
-# IDEs
 .vs/
 .vscode/*
 !.vscode/extensions.json
@@ -13,17 +11,14 @@
 *.suo
 *.DotSettings.user
 
-# Secrets and local config (never commit these)
 .env
 .env.*
 appsettings.*.local.json
 secrets.json
 
-# Tailwind: binary is downloaded by scripts/setup-tailwind.*, CSS is generated at build
 src/BloodMatch.Web/tools/*
 !src/BloodMatch.Web/tools/.gitkeep
 src/BloodMatch.Web/wwwroot/css/app.css
 
-# OS junk
 .DS_Store
 Thumbs.db

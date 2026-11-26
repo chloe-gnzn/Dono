@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
-# Downloads the Tailwind CSS standalone CLI into src/BloodMatch.Web/tools/.
-# Run once after cloning:  ./scripts/setup-tailwind.sh
 set -euo pipefail
 
 VERSION="v3.4.17"

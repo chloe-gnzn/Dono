@@ -1,5 +1,3 @@
-# Downloads the Tailwind CSS standalone CLI into src\BloodMatch.Web\tools\.
-# Run once after cloning:  .\scripts\setup-tailwind.ps1
 $ErrorActionPreference = "Stop"
 
 $Version = "v3.4.17"
