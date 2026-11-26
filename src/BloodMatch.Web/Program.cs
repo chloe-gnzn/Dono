@@ -1,6 +1,7 @@
 using BloodMatch.Web.Components;
 using BloodMatch.Web.Configuration;
 using BloodMatch.Web.Services;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,6 +9,10 @@ var builder = WebApplication.CreateBuilder(args);
 // Blazor Web App with global Interactive Server rendering.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+// Blazor authentication state & protected browser storage for circuit sessions.
+builder.Services.AddCascadingAuthenticationState();
+builder.Services.AddAuthorizationCore();
 
 // Supabase configuration bound from appsettings and dotnet user-secrets.
 builder.Services.AddOptions<SupabaseSettings>()
@@ -36,8 +41,13 @@ builder.Services.AddScoped<SupabaseHealthService>();
 builder.Services.AddHealthChecks()
     .AddCheck<SupabaseHealthCheck>("supabase");
 
-// Per-circuit user state used by the layout (temporary until auth is added).
+// Authentication services
 builder.Services.AddScoped<CurrentUserState>();
+builder.Services.AddScoped<CircuitSessionStore>();
+builder.Services.AddScoped<SupabaseAuthenticationStateProvider>();
+builder.Services.AddScoped<AuthenticationStateProvider>(sp =>
+    sp.GetRequiredService<SupabaseAuthenticationStateProvider>());
+builder.Services.AddScoped<AuthService>();
 
 var app = builder.Build();
 

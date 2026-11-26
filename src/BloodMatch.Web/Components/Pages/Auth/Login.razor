@@ -1,0 +1,77 @@
+@page "/login"
+@inject AuthService AuthService
+@inject NavigationManager Nav
+
+<PageTitle>Log in - BloodMatch</PageTitle>
+
+<div class="mx-auto max-w-md px-4 py-14">
+    <AppCard Offset="true" Title="Log in to BloodMatch" Subtitle="Sign in with your registered email and password.">
+        @if (!string.IsNullOrWhiteSpace(_error))
+        {
+            <div class="mb-5">
+                <AppAlert Variant="AlertVariant.Danger" Title="Sign-in failed">@_error</AppAlert>
+            </div>
+        }
+
+        <EditForm Model="_model" OnValidSubmit="SubmitAsync" FormName="login-form">
+            <DataAnnotationsValidator />
+
+            <div class="space-y-4">
+                <FormField Label="Email address" InputId="login-email" Required="true">
+                    <InputText id="login-email" type="email" class="form-input" @bind-Value="_model.Email" placeholder="you@example.com" />
+                    <ValidationMessage For="() => _model.Email" />
+                </FormField>
+
+                <FormField Label="Password" InputId="login-password" Required="true">
+                    <InputText id="login-password" type="password" class="form-input" @bind-Value="_model.Password" />
+                    <ValidationMessage For="() => _model.Password" />
+                </FormField>
+
+                <div class="flex items-center justify-between text-xs">
+                    <a class="link" href="/forgot-password">Forgot password?</a>
+                    <a class="link" href="/register">Create an account</a>
+                </div>
+
+                <div class="pt-2">
+                    <AppButton Type="submit" FullWidth="true" Loading="_submitting">
+                        @(_submitting ? "Signing in..." : "Log in")
+                    </AppButton>
+                </div>
+            </div>
+        </EditForm>
+    </AppCard>
+</div>
+
+@code {
+    [SupplyParameterFromQuery(Name = "returnUrl")]
+    public string? ReturnUrl { get; set; }
+
+    private readonly LoginInput _model = new();
+    private bool _submitting;
+    private string? _error;
+
+    private async Task SubmitAsync()
+    {
+        _error = null;
+        _submitting = true;
+
+        try
+        {
+            var result = await AuthService.LoginAsync(_model);
+            if (!result.Succeeded)
+            {
+                _error = result.ErrorMessage;
+                return;
+            }
+
+            var target = !string.IsNullOrWhiteSpace(ReturnUrl) && ReturnUrl.StartsWith('/') && !ReturnUrl.StartsWith("//")
+                ? ReturnUrl
+                : "/";
+            Nav.NavigateTo(target);
+        }
+        finally
+        {
+            _submitting = false;
+        }
+    }
+}

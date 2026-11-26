@@ -1,10 +1,13 @@
 @implements IDisposable
 @inject CurrentUserState User
+@inject AuthService AuthService
+@inject NavigationManager Nav
 
 <header class="sticky top-0 z-40 border-b border-ink/10 bg-white/95 backdrop-blur">
     <nav class="mx-auto flex max-w-6xl items-center justify-between gap-6 px-4 py-3" aria-label="Main">
         <BrandLogo />
 
+        @* Desktop links *@
         <ul class="hidden items-center gap-7 md:flex">
             @foreach (var item in VisibleLinks)
             {
@@ -19,19 +22,25 @@
             }
         </ul>
 
+        @* Desktop actions *@
         <div class="hidden items-center gap-3 md:flex">
             @if (User.IsAuthenticated)
             {
+                @if (!string.IsNullOrWhiteSpace(User.DisplayName))
+                {
+                    <span class="text-sm font-medium text-ink-soft">@User.DisplayName</span>
+                }
                 <AppBadge Variant="BadgeVariant.Brand">@User.Role</AppBadge>
-                <AppButton Variant="ButtonVariant.Outline" Size="ButtonSize.Small" OnClick="LogOut">Log out</AppButton>
+                <AppButton Variant="ButtonVariant.Outline" Size="ButtonSize.Small" OnClick="LogOutAsync">Log out</AppButton>
             }
             else
             {
                 <AppButton Variant="ButtonVariant.Outline" Size="ButtonSize.Small" Href="/login">Log in</AppButton>
-                <AppButton Size="ButtonSize.Small" Href="/start">Get started</AppButton>
+                <AppButton Size="ButtonSize.Small" Href="/register">Get started</AppButton>
             }
         </div>
 
+        @* Mobile menu button *@
         <button type="button"
                 class="-mr-2 rounded-lg p-2 text-ink hover:bg-ink/5 md:hidden"
                 aria-label="Toggle menu"
@@ -51,6 +60,7 @@
         </button>
     </nav>
 
+    @* Mobile panel *@
     @if (_menuOpen)
     {
         <div id="mobile-menu" class="border-t border-ink/10 bg-white px-4 pb-5 pt-2 md:hidden">
@@ -72,11 +82,11 @@
             <div class="mt-4 flex flex-col gap-3">
                 @if (User.IsAuthenticated)
                 {
-                    <AppButton Variant="ButtonVariant.Outline" FullWidth="true" OnClick="LogOut">Log out (@User.Role)</AppButton>
+                    <AppButton Variant="ButtonVariant.Outline" FullWidth="true" OnClick="LogOutAsync">Log out (@User.Role)</AppButton>
                 }
                 else
                 {
-                    <AppButton FullWidth="true" Href="/start">Get started</AppButton>
+                    <AppButton FullWidth="true" Href="/register">Get started</AppButton>
                     <AppButton Variant="ButtonVariant.Outline" FullWidth="true" Href="/login">Log in</AppButton>
                 }
             </div>
@@ -86,8 +96,6 @@
 
 @code {
     private bool _menuOpen;
-
-    private static readonly UserRole[] Authed = [UserRole.Requester, UserRole.Donor, UserRole.Moderator, UserRole.Admin];
 
     private static readonly NavLinkItem[] Links =
     [
@@ -114,10 +122,11 @@
 
     private void CloseMenu() => _menuOpen = false;
 
-    private void LogOut()
+    private async Task LogOutAsync()
     {
         _menuOpen = false;
-        User.Clear();
+        await AuthService.LogoutAsync();
+        Nav.NavigateTo("/");
     }
 
     public void Dispose() => User.Changed -= OnUserChanged;

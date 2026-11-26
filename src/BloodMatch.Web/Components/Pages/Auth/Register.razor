@@ -1,0 +1,154 @@
+@page "/register"
+@inject AuthService AuthService
+@inject NavigationManager Nav
+
+<PageTitle>Create account - BloodMatch</PageTitle>
+
+<div class="mx-auto max-w-2xl px-4 py-12">
+    <AppCard Offset="true" Title="Create your BloodMatch account" Subtitle="Join as a family requester or a volunteer blood donor.">
+        @if (_confirmedPending)
+        {
+            <AppAlert Variant="AlertVariant.Success" Title="Check your email">
+                <p>We sent a confirmation link to <strong>@_model.Email</strong>. Open the link in your inbox to activate your account before signing in.</p>
+            </AppAlert>
+
+            <div class="mt-6 flex flex-wrap gap-3">
+                <AppButton Href="/login">Go to login</AppButton>
+                <AppButton Variant="ButtonVariant.Outline" Href="/">Back to home</AppButton>
+            </div>
+        }
+        else
+        {
+            @if (!string.IsNullOrWhiteSpace(_error))
+            {
+                <div class="mb-5">
+                    <AppAlert Variant="AlertVariant.Danger" Title="Registration failed">@_error</AppAlert>
+                </div>
+            }
+
+            <EditForm Model="_model" OnValidSubmit="SubmitAsync" FormName="register-form">
+                <DataAnnotationsValidator />
+
+                <div class="space-y-5">
+                    <div>
+                        <p class="form-label">I am joining as <span class="text-brand-600">*</span></p>
+                        <div class="grid gap-3 sm:grid-cols-2">
+                            <button type="button"
+                                    class="@RoleCardClass(UserRole.Requester)"
+                                    @onclick="() => _model.Role = UserRole.Requester">
+                                <span class="block font-heading text-sm font-bold text-ink">Requester</span>
+                                <span class="mt-1 block text-xs text-ink-soft">Seeking blood for a patient in a hospital.</span>
+                            </button>
+
+                            <button type="button"
+                                    class="@RoleCardClass(UserRole.Donor)"
+                                    @onclick="() => _model.Role = UserRole.Donor">
+                                <span class="block font-heading text-sm font-bold text-ink">Volunteer Donor</span>
+                                <span class="mt-1 block text-xs text-ink-soft">Ready to receive compatible local match alerts.</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="grid gap-4 md:grid-cols-2">
+                        <FormField Label="Full name" InputId="reg-name" Required="true">
+                            <InputText id="reg-name" class="form-input" @bind-Value="_model.FullName" placeholder="Juan Dela Cruz" />
+                            <ValidationMessage For="() => _model.FullName" />
+                        </FormField>
+
+                        <FormField Label="Email address" InputId="reg-email" Required="true">
+                            <InputText id="reg-email" type="email" class="form-input" @bind-Value="_model.Email" placeholder="you@example.com" />
+                            <ValidationMessage For="() => _model.Email" />
+                        </FormField>
+
+                        <FormField Label="Mobile number" InputId="reg-phone" Hint="Optional, used for coordination">
+                            <InputText id="reg-phone" class="form-input" @bind-Value="_model.Phone" placeholder="+63 917 000 0000" />
+                            <ValidationMessage For="() => _model.Phone" />
+                        </FormField>
+
+                        <FormField Label="City / Municipality" InputId="reg-city" Required="true">
+                            <InputText id="reg-city" class="form-input" @bind-Value="_model.City" placeholder="Manila" />
+                            <ValidationMessage For="() => _model.City" />
+                        </FormField>
+
+                        <FormField Label="Province / Metro" InputId="reg-province" Required="true" Class="md:col-span-2">
+                            <InputText id="reg-province" class="form-input" @bind-Value="_model.Province" placeholder="Metro Manila" />
+                            <ValidationMessage For="() => _model.Province" />
+                        </FormField>
+
+                        <FormField Label="Password" InputId="reg-password" Required="true" Hint="At least 8 characters">
+                            <InputText id="reg-password" type="password" class="form-input" @bind-Value="_model.Password" />
+                            <ValidationMessage For="() => _model.Password" />
+                        </FormField>
+
+                        <FormField Label="Confirm password" InputId="reg-confirm" Required="true">
+                            <InputText id="reg-confirm" type="password" class="form-input" @bind-Value="_model.ConfirmPassword" />
+                            <ValidationMessage For="() => _model.ConfirmPassword" />
+                        </FormField>
+                    </div>
+
+                    <div class="flex flex-wrap items-center justify-between gap-4 pt-2">
+                        <p class="text-sm text-ink-soft">
+                            Already have an account? <a class="link" href="/login">Log in</a>
+                        </p>
+
+                        <AppButton Type="submit" Loading="_submitting">
+                            @(_submitting ? "Creating account..." : "Create account")
+                        </AppButton>
+                    </div>
+                </div>
+            </EditForm>
+        }
+    </AppCard>
+</div>
+
+@code {
+    [SupplyParameterFromQuery(Name = "role")]
+    public string? RoleParam { get; set; }
+
+    private readonly RegisterInput _model = new();
+    private bool _submitting;
+    private bool _confirmedPending;
+    private string? _error;
+
+    protected override void OnInitialized()
+    {
+        if (string.Equals(RoleParam, "donor", StringComparison.OrdinalIgnoreCase))
+        {
+            _model.Role = UserRole.Donor;
+        }
+    }
+
+    private string RoleCardClass(UserRole role) => _model.Role == role
+        ? "rounded-xl border-2 border-brand-600 bg-brand-50 p-4 text-left transition-colors"
+        : "rounded-xl border border-ink/20 bg-white p-4 text-left transition-colors hover:border-brand-400";
+
+    private async Task SubmitAsync()
+    {
+        _error = null;
+        _submitting = true;
+
+        try
+        {
+            var confirmUrl = Nav.ToAbsoluteUri("/auth/confirm").ToString();
+            var result = await AuthService.RegisterAsync(_model, confirmUrl);
+
+            if (!result.Succeeded)
+            {
+                _error = result.ErrorMessage;
+                return;
+            }
+
+            if (result.RequiresEmailConfirmation)
+            {
+                _confirmedPending = true;
+                return;
+            }
+
+            Nav.NavigateTo("/");
+        }
+        finally
+        {
+            _submitting = false;
+        }
+    }
+}

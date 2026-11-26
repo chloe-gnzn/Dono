@@ -1,0 +1,91 @@
+@page "/auth/confirm"
+@inject AuthService AuthService
+@inject NavigationManager Nav
+
+<PageTitle>Email confirmation - BloodMatch</PageTitle>
+
+<div class="mx-auto max-w-md px-4 py-14">
+    <AppCard Offset="true" Title="Email verification">
+        @if (_verifying)
+        {
+            <div class="flex items-center gap-3 py-4 text-sm text-ink-soft">
+                <Spinner Size="SpinnerSize.Small" />
+                <span>Verifying your confirmation link...</span>
+            </div>
+        }
+        else if (!string.IsNullOrWhiteSpace(_error))
+        {
+            <AppAlert Variant="AlertVariant.Danger" Title="Verification failed">@_error</AppAlert>
+            <div class="mt-6 flex flex-wrap gap-3">
+                <AppButton Href="/login">Go to login</AppButton>
+                <AppButton Variant="ButtonVariant.Outline" Href="/register">Register again</AppButton>
+            </div>
+        }
+        else
+        {
+            <AppAlert Variant="AlertVariant.Success" Title="Email confirmed">
+                Your email address has been verified and your session is active.
+            </AppAlert>
+            <div class="mt-6 flex flex-wrap gap-3">
+                <AppButton Href="/">Continue</AppButton>
+                <AppButton Variant="ButtonVariant.Outline" Href="/login">Sign in</AppButton>
+            </div>
+        }
+    </AppCard>
+</div>
+
+@code {
+    [SupplyParameterFromQuery(Name = "token_hash")]
+    public string? TokenHash { get; set; }
+
+    [SupplyParameterFromQuery(Name = "type")]
+    public string? Type { get; set; }
+
+    [SupplyParameterFromQuery(Name = "error_description")]
+    public string? ErrorDescription { get; set; }
+
+    private bool _verifying = true;
+    private string? _error;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            return;
+        }
+
+        if (!string.IsNullOrWhiteSpace(ErrorDescription))
+        {
+            _error = ErrorDescription;
+            _verifying = false;
+            StateHasChanged();
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(TokenHash))
+        {
+            _error = "Missing verification token. Open the link directly from your email or sign in below.";
+            _verifying = false;
+            StateHasChanged();
+            return;
+        }
+
+        var result = await AuthService.VerifyTokenHashAsync(TokenHash, Type);
+        _verifying = false;
+
+        if (!result.Succeeded)
+        {
+            _error = result.ErrorMessage;
+            StateHasChanged();
+            return;
+        }
+
+        if (string.Equals(Type, "recovery", StringComparison.OrdinalIgnoreCase))
+        {
+            Nav.NavigateTo("/forgot-password?mode=recovery", replace: true);
+            return;
+        }
+
+        StateHasChanged();
+    }
+}
