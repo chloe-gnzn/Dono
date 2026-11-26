@@ -62,7 +62,10 @@ docs/                     COMMIT_PLAN.md (progress), DESIGN.md (palette, styling
 scripts/                  Tailwind setup and watch scripts
 supabase/migrations/      SQL migrations (added from commit 4)
 src/BloodMatch.Web/
-  Components/             Razor components (App, Routes, Layout, Pages)
+  Components/Layout/      MainLayout, Navbar, Footer, BrandLogo
+  Components/UI/          Shared UI kit (AppButton, AppCard, FormField, AppAlert,
+                          AppBadge, RequestStatusBadge, Spinner, Modal)
+  Components/Pages/       Pages (Home, NotFound, Error, Dev/*)
   Styles/app.css          Tailwind source (compiled to wwwroot/css/app.css)
   tailwind.config.js      Palette and theme
   tools/                  Tailwind binary (downloaded, git-ignored)
@@ -72,7 +75,10 @@ src/BloodMatch.Web/
 
 ## Developer pages
 
-`/dev/palette` shows the design palette. Dev pages are removed before release.
+- `/dev/components`: every shared component, plus a role switcher that previews the navbar per role.
+- `/dev/palette`: the design palette.
+
+Dev pages are removed before release.
 
 ## Progress
 

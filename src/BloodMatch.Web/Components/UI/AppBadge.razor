@@ -1,0 +1,26 @@
+<span class="@CssClass">
+    @if (Dot)
+    {
+        <span class="h-1.5 w-1.5 rounded-full bg-current" aria-hidden="true"></span>
+    }
+    @ChildContent
+</span>
+
+@code {
+    [Parameter] public BadgeVariant Variant { get; set; } = BadgeVariant.Neutral;
+
+    /// <summary>Show a small status dot before the text.</summary>
+    [Parameter] public bool Dot { get; set; }
+
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    private string CssClass => "badge " + Variant switch
+    {
+        BadgeVariant.Brand => "badge-brand",
+        BadgeVariant.Info => "badge-info",
+        BadgeVariant.Success => "badge-success",
+        BadgeVariant.Warning => "badge-warning",
+        BadgeVariant.Danger => "badge-danger",
+        _ => "badge-neutral"
+    };
+}

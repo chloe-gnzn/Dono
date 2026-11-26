@@ -1,0 +1,53 @@
+@if (_visible)
+{
+    <div class="@CssClass" role="@(Variant is AlertVariant.Danger or AlertVariant.Warning ? "alert" : "status")">
+        <span class="mt-0.5 flex h-5 w-5 flex-none items-center justify-center rounded-full bg-current text-xs font-bold" aria-hidden="true">
+            <span class="text-white">@Icon</span>
+        </span>
+
+        <div class="flex-1">
+            @if (!string.IsNullOrEmpty(Title))
+            {
+                <p class="font-bold">@Title</p>
+            }
+            <div>@ChildContent</div>
+        </div>
+
+        @if (Dismissible)
+        {
+            <button type="button" class="-m-1 flex-none rounded p-1 text-lg leading-none opacity-70 hover:opacity-100" aria-label="Dismiss" @onclick="Dismiss">&times;</button>
+        }
+    </div>
+}
+
+@code {
+    [Parameter] public AlertVariant Variant { get; set; } = AlertVariant.Info;
+    [Parameter] public string? Title { get; set; }
+    [Parameter] public bool Dismissible { get; set; }
+    [Parameter] public EventCallback OnDismiss { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    private bool _visible = true;
+
+    private string CssClass => "alert " + Variant switch
+    {
+        AlertVariant.Success => "alert-success",
+        AlertVariant.Warning => "alert-warning",
+        AlertVariant.Danger => "alert-danger",
+        _ => "alert-info"
+    };
+
+    private string Icon => Variant switch
+    {
+        AlertVariant.Success => "✓",
+        AlertVariant.Warning => "!",
+        AlertVariant.Danger => "×",
+        _ => "i"
+    };
+
+    private async Task Dismiss()
+    {
+        _visible = false;
+        await OnDismiss.InvokeAsync();
+    }
+}

@@ -1,0 +1,28 @@
+<AppBadge Variant="Variant" Dot="true">@Text</AppBadge>
+
+@code {
+    [Parameter, EditorRequired] public RequestStatus Status { get; set; }
+
+    private string Text => Status switch
+    {
+        RequestStatus.Draft => "Draft",
+        RequestStatus.PendingVerification => "Pending verification",
+        RequestStatus.Approved => "Approved",
+        RequestStatus.Matching => "Finding donors",
+        RequestStatus.Fulfilled => "Fulfilled",
+        RequestStatus.Denied => "Denied",
+        RequestStatus.Expired => "Expired",
+        RequestStatus.Cancelled => "Cancelled",
+        _ => Status.ToString()
+    };
+
+    private BadgeVariant Variant => Status switch
+    {
+        RequestStatus.PendingVerification => BadgeVariant.Warning,
+        RequestStatus.Approved => BadgeVariant.Info,
+        RequestStatus.Matching => BadgeVariant.Brand,
+        RequestStatus.Fulfilled => BadgeVariant.Success,
+        RequestStatus.Denied => BadgeVariant.Danger,
+        _ => BadgeVariant.Neutral
+    };
+}

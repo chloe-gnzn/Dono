@@ -1,0 +1,36 @@
+<footer class="mt-16">
+    @* Red band, echoing the three-column strip in the design inspiration *@
+    <div class="band">
+        <div class="mx-auto grid max-w-6xl gap-8 px-4 py-10 md:grid-cols-3">
+            <div>
+                <h3 class="!text-base !text-white">100% non-commercial</h3>
+                <p class="mt-2 text-sm text-white/90">
+                    Blood is never bought or sold here. BloodMatch only connects families with volunteer donors.
+                </p>
+            </div>
+            <div>
+                <h3 class="!text-base !text-white">Privacy first</h3>
+                <p class="mt-2 text-sm text-white/90">
+                    Patient identities are never shown to donors. Every request is checked by a moderator.
+                </p>
+            </div>
+            <div>
+                <h3 class="!text-base !text-white">In an emergency</h3>
+                <p class="mt-2 text-sm text-white/90">
+                    BloodMatch is not an emergency service. Go straight to the hospital or call your local emergency number.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-brand-800 text-white/80">
+        <div class="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-4 py-4 text-xs md:flex-row">
+            <p>&copy; @DateTime.Now.Year BloodMatch. A community project.</p>
+            <ul class="flex items-center gap-5">
+                <li><a class="hover:text-white hover:underline" href="/privacy">Privacy</a></li>
+                <li><a class="hover:text-white hover:underline" href="/terms">Terms</a></li>
+                <li><a class="hover:text-white hover:underline" href="/contact">Contact</a></li>
+            </ul>
+        </div>
+    </div>
+</footer>

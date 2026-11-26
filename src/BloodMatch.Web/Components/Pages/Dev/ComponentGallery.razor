@@ -1,0 +1,149 @@
+@page "/dev/components"
+@inject CurrentUserState User
+
+<PageTitle>Components (dev)</PageTitle>
+
+<div class="mx-auto max-w-5xl space-y-8 px-4 py-10">
+    <header>
+        <p class="text-xs font-bold uppercase tracking-widest text-brand-600">Developer page</p>
+        <h1 class="mt-1">UI components</h1>
+        <p class="mt-2 text-ink-soft">Every shared component in one place. Remove before release.</p>
+    </header>
+
+    <AppCard Title="Preview navigation by role" Subtitle="Temporary: switches what the navbar shows until real auth exists.">
+        <div class="flex flex-wrap gap-2">
+            @foreach (var role in Enum.GetValues<UserRole>())
+            {
+                <AppButton Size="ButtonSize.Small"
+                           Variant="@(User.Role == role ? ButtonVariant.Primary : ButtonVariant.Outline)"
+                           OnClick="() => User.Set(role, role.ToString())">
+                    @role
+                </AppButton>
+            }
+        </div>
+        <p class="form-hint">Current role: <strong>@User.Role</strong></p>
+    </AppCard>
+
+    <AppCard Title="Buttons">
+        <div class="space-y-4">
+            <div class="flex flex-wrap items-center gap-3">
+                <AppButton>Primary</AppButton>
+                <AppButton Variant="ButtonVariant.Outline">Outline</AppButton>
+                <AppButton Variant="ButtonVariant.Ghost">Ghost</AppButton>
+                <AppButton Variant="ButtonVariant.Danger">Danger</AppButton>
+                <AppButton Disabled="true">Disabled</AppButton>
+            </div>
+            <div class="flex flex-wrap items-center gap-3">
+                <AppButton Size="ButtonSize.Small">Small</AppButton>
+                <AppButton>Medium</AppButton>
+                <AppButton Size="ButtonSize.Large">Large</AppButton>
+                <AppButton Href="/not-found" Variant="ButtonVariant.Outline">As link</AppButton>
+            </div>
+            <div class="flex flex-wrap items-center gap-3">
+                <AppButton Loading="@_saving" OnClick="FakeSave">@(_saving ? "Saving..." : "Click to simulate saving")</AppButton>
+            </div>
+        </div>
+    </AppCard>
+
+    <AppCard Title="Badges and request statuses">
+        <div class="space-y-4">
+            <div class="flex flex-wrap gap-2">
+                <AppBadge>Neutral</AppBadge>
+                <AppBadge Variant="BadgeVariant.Brand">Brand</AppBadge>
+                <AppBadge Variant="BadgeVariant.Info">Info</AppBadge>
+                <AppBadge Variant="BadgeVariant.Success">Success</AppBadge>
+                <AppBadge Variant="BadgeVariant.Warning">Warning</AppBadge>
+                <AppBadge Variant="BadgeVariant.Danger">Danger</AppBadge>
+            </div>
+            <div class="flex flex-wrap gap-2">
+                @foreach (var status in Enum.GetValues<RequestStatus>())
+                {
+                    <RequestStatusBadge Status="status" />
+                }
+            </div>
+        </div>
+    </AppCard>
+
+    <AppCard Title="Alerts">
+        <div class="space-y-3">
+            <AppAlert Title="Heads up">Moderators review every request before donors are notified.</AppAlert>
+            <AppAlert Variant="AlertVariant.Success" Title="Request approved">Matching donors are being notified.</AppAlert>
+            <AppAlert Variant="AlertVariant.Warning" Title="Photo is blurry">Please upload a clearer picture of the hospital form.</AppAlert>
+            <AppAlert Variant="AlertVariant.Danger" Dismissible="true">This one can be dismissed.</AppAlert>
+        </div>
+    </AppCard>
+
+    <AppCard Title="Form fields">
+        <div class="grid gap-5 md:grid-cols-2">
+            <FormField Label="Hospital name" InputId="g-hospital" Required="true" Hint="As written on the request form.">
+                <input id="g-hospital" class="form-input" placeholder="e.g. Philippine General Hospital" @bind="_hospital" @bind:event="oninput" />
+            </FormField>
+
+            <FormField Label="Blood type" InputId="g-type" Required="true">
+                <select id="g-type" class="form-input">
+                    <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
+                    <option>AB+</option><option>AB-</option><option>O+</option><option>O-</option>
+                </select>
+            </FormField>
+
+            <FormField Label="Units needed" InputId="g-units" Error="@(_unitsError)">
+                <input id="g-units" type="number" class="form-input" @bind="_units" @bind:event="oninput" />
+            </FormField>
+
+            <FormField Label="Disabled example" InputId="g-disabled">
+                <input id="g-disabled" class="form-input" disabled value="Cannot edit" />
+            </FormField>
+        </div>
+        <p class="form-hint">Typed: <strong>@_hospital</strong></p>
+    </AppCard>
+
+    <div class="grid gap-6 md:grid-cols-2">
+        <AppCard Title="Card with footer" Subtitle="Header, body and footer slots">
+            <ChildContent>
+                <p class="text-sm text-ink-soft">Cards are white with soft shadow.</p>
+            </ChildContent>
+            <FooterContent>
+                <AppButton Size="ButtonSize.Small">Action</AppButton>
+            </FooterContent>
+        </AppCard>
+
+        <AppCard Offset="true" Title="Offset card" Subtitle="Flat aqua shadow, like the design inspiration">
+            <p class="text-sm text-ink-soft">Used for hero and framed sections.</p>
+        </AppCard>
+    </div>
+
+    <AppCard Title="Spinner and modal">
+        <div class="flex flex-wrap items-center gap-6">
+            <Spinner Size="SpinnerSize.Small" />
+            <Spinner />
+            <Spinner Size="SpinnerSize.Large" Label="Loading requests..." />
+            <AppButton Variant="ButtonVariant.Outline" OnClick="() => _modalOpen = true">Open modal</AppButton>
+        </div>
+    </AppCard>
+</div>
+
+<Modal @bind-IsOpen="_modalOpen" Title="Deny this request?">
+    <ChildContent>
+        <p>A reason is required and will be shown to the requester. This is a demo dialog.</p>
+    </ChildContent>
+    <FooterContent>
+        <AppButton Variant="ButtonVariant.Ghost" OnClick="() => _modalOpen = false">Cancel</AppButton>
+        <AppButton Variant="ButtonVariant.Danger" OnClick="() => _modalOpen = false">Deny request</AppButton>
+    </FooterContent>
+</Modal>
+
+@code {
+    private bool _saving;
+    private bool _modalOpen;
+    private string? _hospital;
+    private int _units = 2;
+
+    private string? _unitsError => _units is < 1 or > 10 ? "Units must be between 1 and 10." : null;
+
+    private async Task FakeSave()
+    {
+        _saving = true;
+        await Task.Delay(1500);
+        _saving = false;
+    }
+}

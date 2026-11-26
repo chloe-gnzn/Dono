@@ -1,11 +1,22 @@
 @inherits LayoutComponentBase
 
-<main>
-    @Body
-</main>
+<a href="#main"
+   class="sr-only z-50 rounded-full bg-white px-4 py-2 text-sm font-bold text-brand-600 focus:not-sr-only focus:fixed focus:left-4 focus:top-4">
+    Skip to content
+</a>
+
+<div class="flex min-h-screen flex-col">
+    <Navbar />
+
+    <main id="main" class="flex-1">
+        @Body
+    </main>
+
+    <Footer />
+</div>
 
 <div id="blazor-error-ui">
     An unhandled error has occurred.
     <a href="" class="reload">Reload</a>
-    <span class="dismiss">&#128938;</span>
+    <span class="dismiss">&times;</span>
 </div>

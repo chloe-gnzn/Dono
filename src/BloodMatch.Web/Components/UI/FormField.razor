@@ -1,0 +1,39 @@
+@* Label + control + hint/error wrapper. Put any input inside; give it id="@InputId". *@
+
+<div class="@Class">
+    @if (!string.IsNullOrEmpty(Label))
+    {
+        <label for="@InputId" class="form-label">
+            @Label
+            @if (Required)
+            {
+                <span class="text-brand-600" aria-hidden="true">*</span>
+                <span class="sr-only">(required)</span>
+            }
+        </label>
+    }
+
+    @ChildContent
+
+    @if (!string.IsNullOrEmpty(Error))
+    {
+        <p class="form-error" role="alert">@Error</p>
+    }
+    else if (!string.IsNullOrEmpty(Hint))
+    {
+        <p class="form-hint">@Hint</p>
+    }
+</div>
+
+@code {
+    [Parameter] public string? Label { get; set; }
+
+    /// <summary>The id of the input inside, so the label is linked to it.</summary>
+    [Parameter] public string? InputId { get; set; }
+
+    [Parameter] public string? Hint { get; set; }
+    [Parameter] public string? Error { get; set; }
+    [Parameter] public bool Required { get; set; }
+    [Parameter] public string? Class { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}
