@@ -17,10 +17,13 @@ identities are never shown to donors.
 
 - [.NET 10 SDK](https://dotnet.microsoft.com/download) (`dotnet --version` should print `10.x`)
 - Git
+- A Supabase project (with migrations in `supabase/migrations/` applied)
 
 ## First-time setup
 
-Download the Tailwind CLI once (it is git-ignored, so every clone needs this):
+### 1. Download the Tailwind CLI
+
+It is git-ignored, so every clone needs this once:
 
 ```powershell
 # Windows (PowerShell)
@@ -33,14 +36,24 @@ chmod +x scripts/*.sh
 ./scripts/setup-tailwind.sh
 ```
 
+### 2. Configure Supabase secrets
+
+Never commit Supabase keys. Store them locally using .NET user-secrets:
+
+```bash
+cd src/BloodMatch.Web
+dotnet user-secrets set "Supabase:Url" "https://YOUR_PROJECT_REF.supabase.co"
+dotnet user-secrets set "Supabase:AnonKey" "YOUR_ANON_KEY"
+dotnet user-secrets set "Supabase:ServiceRoleKey" "YOUR_SERVICE_ROLE_KEY"
+```
+
 ## Run
 
 ```bash
 dotnet run --project src/BloodMatch.Web --launch-profile http
 ```
 
-Open <http://localhost:5080>. Every `dotnet build` / `dotnet run` recompiles
-`Styles/app.css` into `wwwroot/css/app.css` automatically.
+Open <http://localhost:5080>. Visit <http://localhost:5080/health> (or `/healthz`) to run the Supabase connectivity test.
 
 ### Live development (recommended)
 
@@ -60,12 +73,10 @@ dotnet watch --project src/BloodMatch.Web --launch-profile http
 BloodMatch.sln
 docs/                     COMMIT_PLAN.md (progress), DESIGN.md (palette, styling rules)
 scripts/                  Tailwind setup and watch scripts
-supabase/migrations/      SQL migrations (added from commit 4)
+supabase/migrations/      SQL migrations (schema, RLS, compatibility & seed data)
 src/BloodMatch.Web/
-  Components/Layout/      MainLayout, Navbar, Footer, BrandLogo
-  Components/UI/          Shared UI kit (AppButton, AppCard, FormField, AppAlert,
-                          AppBadge, RequestStatusBadge, Spinner, Modal)
-  Components/Pages/       Pages (Home, NotFound, Error, Dev/*)
+  Components/             Razor components (App, Routes, Layout, Pages)
+  Configuration/          Strongly-typed options (SupabaseSettings)
   Styles/app.css          Tailwind source (compiled to wwwroot/css/app.css)
   tailwind.config.js      Palette and theme
   tools/                  Tailwind binary (downloaded, git-ignored)
@@ -75,6 +86,7 @@ src/BloodMatch.Web/
 
 ## Developer pages
 
+- `/health`: Supabase configuration and connectivity check.
 - `/dev/components`: every shared component, plus a role switcher that previews the navbar per role.
 - `/dev/palette`: the design palette.
 

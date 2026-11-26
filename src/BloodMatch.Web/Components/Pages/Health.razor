@@ -1,0 +1,108 @@
+@page "/health"
+@inject SupabaseHealthService HealthService
+
+<PageTitle>System health - BloodMatch</PageTitle>
+
+<div class="mx-auto max-w-3xl space-y-6 px-4 py-10">
+    <header class="flex flex-wrap items-center justify-between gap-4">
+        <div>
+            <p class="text-xs font-bold uppercase tracking-widest text-brand-600">Diagnostics</p>
+            <h1 class="mt-1">Supabase connectivity</h1>
+            <p class="mt-1 text-sm text-ink-soft">Verifies configuration, Auth service, and PostgREST API access.</p>
+        </div>
+
+        <AppButton Loading="_checking" OnClick="RunCheckAsync">
+            @(_checking ? "Testing..." : "Run connectivity test")
+        </AppButton>
+    </header>
+
+    @if (_report is null)
+    {
+        <AppCard>
+            <div class="flex items-center gap-3 text-sm text-ink-soft">
+                <Spinner Size="SpinnerSize.Small" />
+                <span>Checking Supabase connection...</span>
+            </div>
+        </AppCard>
+    }
+    else
+    {
+        <AppAlert Variant="@(_report.IsHealthy ? AlertVariant.Success : (_report.ClientConfigured ? AlertVariant.Danger : AlertVariant.Warning))"
+                  Title="@(_report.IsHealthy ? "Healthy" : "Attention required")">
+            <p>@_report.Summary</p>
+            @if (!string.IsNullOrWhiteSpace(_report.ErrorDetail))
+            {
+                <p class="mt-1 text-xs opacity-90">@_report.ErrorDetail</p>
+            }
+        </AppAlert>
+
+        <AppCard Title="Check breakdown" Subtitle="@($"Last checked {_report.CheckedAt.ToLocalTime():HH:mm:ss} ({_report.LatencyMs} ms)")">
+            <dl class="divide-y divide-ink/10 text-sm">
+                <div class="flex items-center justify-between py-3">
+                    <dt class="font-medium text-ink">Client config (URL &amp; Anon key)</dt>
+                    <dd>
+                        <AppBadge Variant="@(_report.ClientConfigured ? BadgeVariant.Success : BadgeVariant.Warning)" Dot="true">
+                            @(_report.ClientConfigured ? "Configured" : "Missing")
+                        </AppBadge>
+                    </dd>
+                </div>
+
+                <div class="flex items-center justify-between py-3">
+                    <dt class="font-medium text-ink">Server-only service role key</dt>
+                    <dd>
+                        <AppBadge Variant="@(_report.ServiceRoleConfigured ? BadgeVariant.Success : BadgeVariant.Warning)" Dot="true">
+                            @(_report.ServiceRoleConfigured ? "Configured" : "Missing")
+                        </AppBadge>
+                    </dd>
+                </div>
+
+                <div class="flex items-center justify-between py-3">
+                    <dt class="font-medium text-ink">Supabase Auth (/auth/v1/health)</dt>
+                    <dd>
+                        <AppBadge Variant="@(_report.AuthReachable ? BadgeVariant.Success : BadgeVariant.Danger)" Dot="true">
+                            @(_report.AuthReachable ? "Reachable" : "Unreachable")
+                        </AppBadge>
+                    </dd>
+                </div>
+
+                <div class="flex items-center justify-between py-3">
+                    <dt class="font-medium text-ink">PostgREST API (/rest/v1/)</dt>
+                    <dd>
+                        <AppBadge Variant="@(_report.RestReachable ? BadgeVariant.Success : BadgeVariant.Danger)" Dot="true">
+                            @(_report.RestReachable ? "Reachable" : "Unreachable")
+                        </AppBadge>
+                    </dd>
+                </div>
+
+                <div class="flex items-center justify-between py-3">
+                    <dt class="font-medium text-ink">Reference seed data (blood_types)</dt>
+                    <dd>
+                        <AppBadge Variant="@(_report.SeedTableAccessible ? BadgeVariant.Success : BadgeVariant.Neutral)" Dot="true">
+                            @(_report.SeedTableAccessible ? "Verified" : "Not verified")
+                        </AppBadge>
+                    </dd>
+                </div>
+            </dl>
+        </AppCard>
+    }
+</div>
+
+@code {
+    private SupabaseHealthReport? _report;
+    private bool _checking;
+
+    protected override Task OnInitializedAsync() => RunCheckAsync();
+
+    private async Task RunCheckAsync()
+    {
+        _checking = true;
+        try
+        {
+            _report = await HealthService.CheckConnectivityAsync();
+        }
+        finally
+        {
+            _checking = false;
+        }
+    }
+}

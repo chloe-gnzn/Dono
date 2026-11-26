@@ -8,7 +8,14 @@
     <UserSecretsId>5b2f6c0e-7d3a-4e1b-9a54-0b100d3a7c11</UserSecretsId>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Supabase" Version="1.1.1" />
+  </ItemGroup>
 
+  <!-- ================================================================= -->
+  <!-- Tailwind CSS (standalone CLI, no Node.js required)                -->
+  <!-- Binary is downloaded by scripts/setup-tailwind.(ps1|sh) into tools/ -->
+  <!-- ================================================================= -->
   <PropertyGroup>
     <TailwindExe Condition="$([MSBuild]::IsOSPlatform('Windows'))">$(MSBuildProjectDirectory)\tools\tailwindcss.exe</TailwindExe>
     <TailwindExe Condition="!$([MSBuild]::IsOSPlatform('Windows'))">$(MSBuildProjectDirectory)/tools/tailwindcss</TailwindExe>
