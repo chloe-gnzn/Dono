@@ -1,9 +1,3 @@
--- Commit 5: Row Level Security (RLS) policies and anonymized donor view
-
--- ---------------------------------------------------------------------------
--- Security helper functions (SECURITY DEFINER avoids RLS recursion on profiles)
--- ---------------------------------------------------------------------------
-
 CREATE OR REPLACE FUNCTION public.current_user_role()
 RETURNS public.user_role
 LANGUAGE sql
