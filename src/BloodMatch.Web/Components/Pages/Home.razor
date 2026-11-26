@@ -1,0 +1,23 @@
+@page "/"
+@inject IWebHostEnvironment Env
+
+<PageTitle>BloodMatch</PageTitle>
+
+<h1>BloodMatch</h1>
+<p>Non-commercial blood matching portal. The project scaffold is running.</p>
+
+<ul>
+    <li>Environment: <strong>@Env.EnvironmentName</strong></li>
+    <li>Runtime: <strong>@Environment.Version</strong></li>
+</ul>
+
+<h2>Interactivity check</h2>
+<p>
+    This confirms the Blazor Server circuit (SignalR) is connected.
+    Clicked <strong>@_count</strong> time(s).
+</p>
+<button @onclick="() => _count++">Click me</button>
+
+@code {
+    private int _count;
+}

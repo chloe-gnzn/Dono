@@ -1,0 +1,24 @@
+# .NET build output
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# IDEs
+.vs/
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.user
+*.suo
+*.DotSettings.user
+
+# Secrets and local config (never commit these)
+.env
+.env.*
+appsettings.*.local.json
+secrets.json
+
+# OS junk
+.DS_Store
+Thumbs.db

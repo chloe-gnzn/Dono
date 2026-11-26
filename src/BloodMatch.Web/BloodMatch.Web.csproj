@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>BloodMatch.Web</RootNamespace>
+    <UserSecretsId>5b2f6c0e-7d3a-4e1b-9a54-0b100d3a7c11</UserSecretsId>
+  </PropertyGroup>
+
+</Project>
